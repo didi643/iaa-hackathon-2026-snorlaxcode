@@ -1,0 +1,248 @@
+line,peril,model,term,coef,relativity
+motor,own_damage,ff_B,(Intercept),0.160460718343145,1.17405165354061
+motor,own_damage,ff_B,gender=F,-0.187079647735029,0.829377675701293
+motor,own_damage,ff_B,gender=M,0.0609838631634458,1.06288176249953
+motor,own_damage,ff_B,voluntary_excess=0,0.0815729182979371,1.08499233049359
+motor,own_damage,ff_B,voluntary_excess=1000,-0.0927014487295975,0.91146557888592
+motor,own_damage,ff_B,voluntary_excess=250,-0.0182214913332531,0.981943516291626
+motor,own_damage,ff_B,voluntary_excess=500,-0.0967457628065934,0.907786769958262
+motor,own_damage,ff_B,occupation=Accountant,-0.0158247675019923,0.984299786254336
+motor,own_damage,ff_B,occupation=Administrator,-0.0646174588219434,0.93742599884168
+motor,own_damage,ff_B,occupation=Builder,0.107286764248303,1.11325344999897
+motor,own_damage,ff_B,occupation=Care worker,-0.0825632503931524,0.920753198013207
+motor,own_damage,ff_B,occupation=Chef,-0.0295961462786467,0.970837530738036
+motor,own_damage,ff_B,occupation=Doctor,0.118528604484145,1.12583907768745
+motor,own_damage,ff_B,occupation=Driver,-0.150695021572474,0.860109973650329
+motor,own_damage,ff_B,occupation=Electrician,-0.0741698233581185,0.928513997086325
+motor,own_damage,ff_B,occupation=Engineer,-0.0761739230421747,0.926655025882124
+motor,own_damage,ff_B,occupation=Hairdresser,-0.0118931324733656,0.988177311284442
+motor,own_damage,ff_B,occupation=Manager,0.0980634525778654,1.10303277316095
+motor,own_damage,ff_B,occupation=Mechanic,-0.0102328089860764,0.989819368079488
+motor,own_damage,ff_B,occupation=missing,0.00773774925564153,1.00776776300041
+motor,own_damage,ff_B,occupation=Nurse,0.0714695247960012,1.07408541723033
+motor,own_damage,ff_B,occupation=Retail assistant,-0.048756060995313,0.952413432148228
+motor,own_damage,ff_B,occupation=Retired,0.0746412834453327,1.07749756533716
+motor,own_damage,ff_B,occupation=Sales representative,-0.0992460033077134,0.90551991972589
+motor,own_damage,ff_B,occupation=Software developer,0.105472262258927,1.11123528093887
+motor,own_damage,ff_B,occupation=Student,-0.175560217421032,0.838986874026458
+motor,own_damage,ff_B,occupation=Teacher,0.053613615172825,1.0550768576977
+motor,own_damage,ff_B,occupation=Unemployed,0.0764195733413907,1.07941537307429
+motor,own_damage,sf_B,(Intercept),6.99780758088581,1094.23151259978
+motor,own_damage,sf_B,"vehicle_value_group_b=(-Inf,8]",-0.233513705760653,0.79174674417451
+motor,own_damage,sf_B,"vehicle_value_group_b=(10,12]",-0.042950616446318,0.95795869630365
+motor,own_damage,sf_B,"vehicle_value_group_b=(12,14]",0.0827533930071659,1.08627389277655
+motor,own_damage,sf_B,"vehicle_value_group_b=(14, Inf]",0.202536642888398,1.22450495369821
+motor,own_damage,sf_B,"vehicle_value_group_b=(8,10]",-0.00882571368909367,0.991213118597115
+motor,own_damage,sf_B,"vehicle_age_b=(-Inf,7]",0.193105358721955,1.21301058803214
+motor,own_damage,sf_B,"vehicle_age_b=(11,13]",-0.0603724597387729,0.941413829527709
+motor,own_damage,sf_B,"vehicle_age_b=(13, Inf]",-0.234291388769056,0.791131255543152
+motor,own_damage,sf_B,"vehicle_age_b=(7,9]",0.0205593683041916,1.0207721679569
+motor,own_damage,sf_B,"vehicle_age_b=(9,11]",0.0408014156546073,1.04164523056885
+motor,own_damage,sf_B,vehicle_age_b=missing,0.0401977058267258,1.0410165688897
+motor,own_damage,sf_B,voluntary_excess=0,0.0113151839744794,1.0113794428068
+motor,own_damage,sf_B,voluntary_excess=1000,0.0916276428082955,1.09595665875058
+motor,own_damage,sf_B,voluntary_excess=250,0.015263244316666,1.01538032253627
+motor,own_damage,sf_B,voluntary_excess=500,-0.118206071100154,0.888512936909428
+motor,third_party_prop,ff_B,(Intercept),0.182893062521975,1.20068600288224
+motor,third_party_prop,ff_B,gender=F,-0.136746136322157,0.872191615800894
+motor,third_party_prop,ff_B,gender=M,0.16019931294261,1.17374479020748
+motor,third_party_prop,ff_B,"vehicle_value_group_b=(-Inf,8]",-0.0223596361050206,0.977888487797599
+motor,third_party_prop,ff_B,"vehicle_value_group_b=(10,12]",0.00726821641528513,1.00729469400964
+motor,third_party_prop,ff_B,"vehicle_value_group_b=(12,14]",0.12892696624973,1.13760703742342
+motor,third_party_prop,ff_B,"vehicle_value_group_b=(14, Inf]",-0.0831031709622237,0.920256198604737
+motor,third_party_prop,ff_B,"vehicle_value_group_b=(8,10]",-0.00727919897720881,0.992747230224978
+motor,third_party_prop,ff_B,self_employed=FALSE,-0.0352957644822395,0.965319866701369
+motor,third_party_prop,ff_B,self_employed=TRUE,0.0587489411028252,1.06050895710591
+motor,third_party_prop,sf_B,(Intercept),7.76293009624988,2351.78547735192
+motor,third_party_prop,sf_B,self_employed=FALSE,0.0703224331125932,1.07285404916202
+motor,third_party_prop,sf_B,self_employed=TRUE,-0.0703224331116534,0.932093233727382
+motor,bodily_injury,ff_B,(Intercept),0.177483283231989,1.19420809443593
+motor,bodily_injury,ff_B,gender=F,-0.228240965025736,0.795932444843974
+motor,bodily_injury,ff_B,gender=M,0.215628946379623,1.2406419488971
+motor,bodily_injury,ff_B,"ncb_years_b=(-Inf,1]",-0.148106144957394,0.862339577086321
+motor,bodily_injury,ff_B,"ncb_years_b=(1,3]",0.08107498322434,1.08445220924147
+motor,bodily_injury,ff_B,"ncb_years_b=(12, Inf]",-0.028128819983621,0.972263111815608
+motor,bodily_injury,ff_B,"ncb_years_b=(3,8]",0.040512780125148,1.04134461813202
+motor,bodily_injury,ff_B,"ncb_years_b=(8,12]",0.0420351829454388,1.04293117149578
+motor,bodily_injury,ff_B,voluntary_excess=0,0.0266014452154498,1.02695842199596
+motor,bodily_injury,ff_B,voluntary_excess=1000,-0.101038455900716,0.903898271995283
+motor,bodily_injury,ff_B,voluntary_excess=250,-0.0492557030669752,0.951937685189405
+motor,bodily_injury,ff_B,voluntary_excess=500,0.111080695106138,1.11748507879323
+motor,bodily_injury,sf_B,(Intercept),9.24003321690564,10301.380732222
+motor,bodily_injury,sf_B,occupation=Accountant,0.0729738990921679,1.07570245973753
+motor,bodily_injury,sf_B,occupation=Administrator,0.0718831126592569,1.07452973779946
+motor,bodily_injury,sf_B,occupation=Builder,0.0722728663111553,1.07494862131423
+motor,bodily_injury,sf_B,occupation=Care worker,-0.078008757301234,0.924956326386893
+motor,bodily_injury,sf_B,occupation=Chef,0.170830838290328,1.18629005719326
+motor,bodily_injury,sf_B,occupation=Doctor,0.0783753515474829,1.08152853590159
+motor,bodily_injury,sf_B,occupation=Driver,-0.022227149727188,0.978018053283913
+motor,bodily_injury,sf_B,occupation=Electrician,-0.141898082964732,0.86770968637829
+motor,bodily_injury,sf_B,occupation=Engineer,-0.0879671103795394,0.915790996246301
+motor,bodily_injury,sf_B,occupation=Hairdresser,-0.0255991167048981,0.974725762571905
+motor,bodily_injury,sf_B,occupation=Manager,-0.135553497452798,0.873232445967311
+motor,bodily_injury,sf_B,occupation=Mechanic,0.0969817625935368,1.10184027872875
+motor,bodily_injury,sf_B,occupation=missing,0.013242280612813,1.01333034791869
+motor,bodily_injury,sf_B,occupation=Nurse,0.232743181620543,1.26205731818854
+motor,bodily_injury,sf_B,occupation=Retail assistant,-0.116922665291365,0.889653991635351
+motor,bodily_injury,sf_B,occupation=Retired,-0.203503354367242,0.815867467598977
+motor,bodily_injury,sf_B,occupation=Sales representative,0.0558009445995727,1.05738718415742
+motor,bodily_injury,sf_B,occupation=Software developer,-0.209802071112658,0.810744699886797
+motor,bodily_injury,sf_B,occupation=Student,0.211848200518557,1.23596025271217
+motor,bodily_injury,sf_B,occupation=Teacher,0.022416729452433,1.02266987233851
+motor,bodily_injury,sf_B,occupation=Unemployed,-0.0778873619960429,0.925068618558157
+motor,bodily_injury,sf_B,"years_licensed_b=(-Inf,3]",-0.140694577877246,0.868754608058463
+motor,bodily_injury,sf_B,"years_licensed_b=(14,33]",0.0150624496290904,1.01517646002958
+motor,bodily_injury,sf_B,"years_licensed_b=(3,14]",0.0791764574485229,1.08239530193318
+motor,bodily_injury,sf_B,"years_licensed_b=(33,51]",-0.0909337671620791,0.913078184655983
+motor,bodily_injury,sf_B,"years_licensed_b=(51, Inf]",0.137389437961865,1.14727485391354
+motor,bodily_injury,sf_B,gender=F,0.074837372381358,1.07770887140503
+motor,bodily_injury,sf_B,gender=M,-0.0748373723811685,0.927894375311646
+motor,theft,ff_B,(Intercept),0.212333661321461,1.23656040863311
+motor,theft,ff_B,occupation=Accountant,-0.153191926006932,0.857965040204304
+motor,theft,ff_B,occupation=Administrator,-0.111344352862469,0.894630627263437
+motor,theft,ff_B,occupation=Builder,0.111857810663642,1.11835383135008
+motor,theft,ff_B,occupation=Care worker,0.110752706243646,1.11711861623449
+motor,theft,ff_B,occupation=Chef,0.088817098345272,1.09288074834784
+motor,theft,ff_B,occupation=Doctor,-0.143004611570407,0.866750071807291
+motor,theft,ff_B,occupation=Driver,-0.089170940841555,0.914689202467697
+motor,theft,ff_B,occupation=Electrician,-0.0825124730761555,0.920799952577244
+motor,theft,ff_B,occupation=Engineer,0.00407036922562577,1.00407866442947
+motor,theft,ff_B,occupation=Hairdresser,0.159161176752456,1.17252691553203
+motor,theft,ff_B,occupation=Manager,-0.12347403531723,0.883844589690542
+motor,theft,ff_B,occupation=Mechanic,0.285973669228176,1.331057407022
+motor,theft,ff_B,occupation=missing,-0.0361851969156971,0.964461661617559
+motor,theft,ff_B,occupation=Nurse,-0.0814515633313236,0.921777356597024
+motor,theft,ff_B,occupation=Retail assistant,-0.0583078163131008,0.943359521290367
+motor,theft,ff_B,occupation=Retired,0.0465447364301767,1.04764494591517
+motor,theft,ff_B,occupation=Sales representative,0.0654069683056793,1.06759341266937
+motor,theft,ff_B,occupation=Software developer,-0.0593075381361639,0.942416895450259
+motor,theft,ff_B,occupation=Student,0.145714988791209,1.15686642116229
+motor,theft,ff_B,occupation=Teacher,0.115921490382044,1.12290770961722
+motor,theft,ff_B,occupation=Unemployed,0.0234532752867587,1.02373046611664
+motor,theft,ff_B,self_employed=FALSE,0.00804791981543852,1.00808039137316
+motor,theft,ff_B,self_employed=TRUE,0.21167591546821,1.23574733357972
+motor,theft,sf_B,(Intercept),8.44510507109974,4652.24450373464
+motor,theft,sf_B,"vehicle_value_group_b=(-Inf,8]",-0.0932375556401021,0.910977066849432
+motor,theft,sf_B,"vehicle_value_group_b=(10,12]",-0.0793017311157869,0.923761154906489
+motor,theft,sf_B,"vehicle_value_group_b=(12,14]",0.20558356880707,1.22824161936005
+motor,theft,sf_B,"vehicle_value_group_b=(14, Inf]",0.1369500134931,1.14677082401998
+motor,theft,sf_B,"vehicle_value_group_b=(8,10]",-0.169994295544397,0.843669629258601
+motor,theft,sf_B,gender=F,0.0991274944214305,1.10420707082655
+motor,theft,sf_B,gender=M,-0.0991274944215135,0.905627238241982
+motor,theft,sf_B,new_business=FALSE,-0.123113090001078,0.884163666836633
+motor,theft,sf_B,new_business=TRUE,0.123113090001016,1.13101231989971
+motor,glass_hail,ff_B,(Intercept),0.185035489993137,1.20326114309964
+motor,glass_hail,ff_B,"hail_days_b=(-Inf,8]",-0.172633582345698,0.841445878989663
+motor,glass_hail,ff_B,"hail_days_b=(12,16]",-0.00516293529435602,0.994850369748531
+motor,glass_hail,ff_B,"hail_days_b=(16,22]",0.0843295380513744,1.08798736797731
+motor,glass_hail,ff_B,"hail_days_b=(22, Inf]",0.272653856973663,1.31344552612108
+motor,glass_hail,ff_B,"hail_days_b=(8,12]",-0.141450850956823,0.868097840714663
+motor,glass_hail,ff_B,voluntary_excess=0,0.169818205671342,1.18508938920615
+motor,glass_hail,ff_B,voluntary_excess=1000,-0.191857807179903,0.82542422954651
+motor,glass_hail,ff_B,voluntary_excess=250,0.148912840433839,1.16057182986346
+motor,glass_hail,ff_B,voluntary_excess=500,-0.0891372124970897,0.914720053940479
+motor,glass_hail,ff_B,"vehicle_value_group_b=(-Inf,8]",-0.0627055881018031,0.939219950516558
+motor,glass_hail,ff_B,"vehicle_value_group_b=(10,12]",-0.074120804332824,0.928559513052999
+motor,glass_hail,ff_B,"vehicle_value_group_b=(12,14]",-0.0204127450206393,0.979794184666189
+motor,glass_hail,ff_B,"vehicle_value_group_b=(14, Inf]",0.0840191528078379,1.08764972515552
+motor,glass_hail,ff_B,"vehicle_value_group_b=(8,10]",0.110956011075616,1.11734575493547
+motor,glass_hail,ff_B,new_business=FALSE,-0.0655317532747993,0.936569307144887
+motor,glass_hail,ff_B,new_business=TRUE,0.103267779702904,1.10878828032247
+motor,glass_hail,sf_B,(Intercept),6.65373085509965,775.672856872416
+motor,glass_hail,sf_B,"vehicle_value_group_b=(-Inf,8]",-0.128833564834037,0.879120269898173
+motor,glass_hail,sf_B,"vehicle_value_group_b=(10,12]",0.0823338318626469,1.08581823005471
+motor,glass_hail,sf_B,"vehicle_value_group_b=(12,14]",0.0399278105936385,1.04073564139239
+motor,glass_hail,sf_B,"vehicle_value_group_b=(14, Inf]",0.106564130793349,1.11244926641213
+motor,glass_hail,sf_B,"vehicle_value_group_b=(8,10]",-0.099992208415969,0.904844468180202
+motor,glass_hail,sf_B,"vehicle_age_b=(-Inf,7]",0.0341505366252681,1.03474036132646
+motor,glass_hail,sf_B,"vehicle_age_b=(11,13]",0.0141295998466896,1.01422989446013
+motor,glass_hail,sf_B,"vehicle_age_b=(13, Inf]",-0.119366682303229,0.887482317030951
+motor,glass_hail,sf_B,"vehicle_age_b=(7,9]",0.0983789940954336,1.10338088071443
+motor,glass_hail,sf_B,"vehicle_age_b=(9,11]",-0.0421314698879443,0.958743726356228
+motor,glass_hail,sf_B,vehicle_age_b=missing,0.0148390216233652,1.01494966651461
+motor,glass_hail,sf_B,"years_licensed_b=(-Inf,3]",-0.0453558595377591,0.95565734153579
+motor,glass_hail,sf_B,"years_licensed_b=(14,33]",-0.0340428511048945,0.966530086867978
+motor,glass_hail,sf_B,"years_licensed_b=(3,14]",0.0719181137861813,1.0745673482094
+motor,glass_hail,sf_B,"years_licensed_b=(33,51]",-0.0325183037762346,0.968004731527151
+motor,glass_hail,sf_B,"years_licensed_b=(51, Inf]",0.0399989006322745,1.04080962995924
+buildings,storm,ff_B,(Intercept),0.0758508934440042,1.07880170575737
+buildings,storm,ff_B,self_employed=FALSE,0.257250593639806,1.29336919624728
+buildings,storm,ff_B,self_employed=TRUE,-0.0707030236275698,0.931738555380564
+buildings,storm,ff_B,construction_type=brick,-0.0205998232306221,0.979610903668445
+buildings,storm,ff_B,construction_type=non_standard,0.23431414323403,1.26404151993375
+buildings,storm,ff_B,construction_type=stone,-0.0540611982042777,0.94737412713234
+buildings,storm,ff_B,construction_type=timber,0.0268944482131311,1.02725936797898
+buildings,storm,sf_B,(Intercept),7.86356020870756,2600.76317219896
+buildings,storm,sf_B,"sum_insured_b=(-Inf,1.59e+05]",-0.152144714104616,0.858863982015307
+buildings,storm,sf_B,"sum_insured_b=(1.59e+05,2.08e+05]",-0.171244459902761,0.842615562573452
+buildings,storm,sf_B,"sum_insured_b=(2.08e+05,2.54e+05]",0.103837736871819,1.10942042228146
+buildings,storm,sf_B,"sum_insured_b=(2.54e+05,3.14e+05]",-0.0151740521095383,0.984940493712536
+buildings,storm,sf_B,"sum_insured_b=(3.14e+05, Inf]",0.234725489245123,1.26456158532691
+buildings,flood,ff_B,(Intercept),0.00610896351929055,1.00612766129221
+buildings,flood,ff_B,construction_type=brick,-0.240565898318415,0.786182835614211
+buildings,flood,ff_B,construction_type=non_standard,0.15907014922041,1.17242018815829
+buildings,flood,ff_B,construction_type=stone,-0.0853268568368393,0.918212111441044
+buildings,flood,ff_B,construction_type=timber,-0.11157602355102,0.894423391576164
+buildings,flood,sf_B,(Intercept),10.0906989142278,24117.6427080845
+buildings,flood,sf_B,construction_type=brick,0.205037072124383,1.2275705727686
+buildings,flood,sf_B,construction_type=non_standard,-0.0533819640500515,0.948017834585614
+buildings,flood,sf_B,construction_type=stone,-0.0502249110309871,0.951015506567298
+buildings,flood,sf_B,construction_type=timber,-0.101430197043349,0.903544247200954
+buildings,escape_of_water,ff_B,(Intercept),0.00214232006432626,1.00214461647154
+buildings,escape_of_water,ff_B,gender=F,-0.199347725403644,0.819264964556818
+buildings,escape_of_water,ff_B,gender=M,-0.105495193781958,0.899878797850104
+buildings,escape_of_water,sf_B,(Intercept),8.39488977263021,4424.39919299884
+buildings,escape_of_water,sf_B,self_employed=FALSE,-0.137730604649988,0.87133339329509
+buildings,escape_of_water,sf_B,self_employed=TRUE,0.13773060465001,1.1476663326518
+buildings,subsidence,ff_B,(Intercept),0.0601913298938216,1.0620397270557
+buildings,subsidence,sf_B,(Intercept),9.56092440312924,14198.9657031362
+buildings,fire,ff_B,(Intercept),0.0806564722169747,1.08399844901339
+buildings,fire,sf_B,(Intercept),11.0236827553249,61309.0505955264
+buildings,fire,sf_B,voluntary_excess=0,-0.139892308028488,0.869451863342525
+buildings,fire,sf_B,voluntary_excess=1000,-0.0612729354386002,0.940566490811956
+buildings,fire,sf_B,voluntary_excess=250,0.180596040964842,1.19793116642092
+buildings,fire,sf_B,voluntary_excess=500,0.0205692025022395,1.02078220648192
+buildings,accidental_damage,ff_B,(Intercept),0.0124480911473418,1.01252589111918
+buildings,accidental_damage,ff_B,construction_type=brick,-0.213117762147755,0.808060972617552
+buildings,accidental_damage,ff_B,construction_type=non_standard,-0.0159230905953427,0.984203011612237
+buildings,accidental_damage,ff_B,construction_type=stone,-0.0670441344803595,0.935153927893328
+buildings,accidental_damage,ff_B,construction_type=timber,0.059947208591268,1.06178049217783
+buildings,accidental_damage,sf_B,(Intercept),6.81309389338737,909.680913383677
+contents,theft,ff_B,(Intercept),-0.063726904049767,0.938261199879446
+contents,theft,ff_B,gender=F,0.191140338249279,1.21062933776208
+contents,theft,ff_B,gender=M,0.0452449839825157,1.04628415137203
+contents,theft,sf_B,(Intercept),8.00892614370298,3007.68555600531
+contents,theft,sf_B,"sum_insured_b=(-Inf,21900]",-0.312610810646795,0.731534562637181
+contents,theft,sf_B,"sum_insured_b=(21900,30800]",-0.167687410474207,0.845618124743971
+contents,theft,sf_B,"sum_insured_b=(30800,41500]",0.082466682102259,1.08596249084908
+contents,theft,sf_B,"sum_insured_b=(41500,56700]",0.0892034479905358,1.09330306401278
+contents,theft,sf_B,"sum_insured_b=(56700, Inf]",0.30862809102826,1.36155590147379
+contents,theft,sf_B,high_value_items=0,-0.107249407968719,0.898301601471136
+contents,theft,sf_B,high_value_items=1,-0.110630069209462,0.895269875571099
+contents,theft,sf_B,high_value_items=2,0.0828635787619037,1.08639359127969
+contents,theft,sf_B,high_value_items=3,0.00245480763223076,1.00245782313948
+contents,theft,sf_B,high_value_items=4,-0.106549484466438,0.89893056396128
+contents,theft,sf_B,high_value_items=5,0.231806836775607,1.26087615040112
+contents,theft,sf_B,high_value_items=missing,0.0073037384749093,1.00733047582734
+contents,theft,sf_B,gender=F,0.0682888119958001,1.0706744874649
+contents,theft,sf_B,gender=M,-0.0682888119957471,0.933990686905981
+contents,escape_of_water,ff_B,(Intercept),-0.118370210608173,0.888367108801499
+contents,escape_of_water,sf_B,(Intercept),7.52727002806229,1858.02621412816
+contents,escape_of_water,sf_B,"sum_insured_b=(-Inf,21900]",-0.166902282743241,0.846282303682048
+contents,escape_of_water,sf_B,"sum_insured_b=(21900,30800]",-0.167569909273359,0.845717491726842
+contents,escape_of_water,sf_B,"sum_insured_b=(30800,41500]",-0.20340266731935,0.815949619021483
+contents,escape_of_water,sf_B,"sum_insured_b=(41500,56700]",0.0527529889435625,1.05416922150386
+contents,escape_of_water,sf_B,"sum_insured_b=(56700, Inf]",0.485121870392392,1.6243729597518
+contents,escape_of_water,sf_B,gender=F,0.122837960936445,1.13070118834075
+contents,escape_of_water,sf_B,gender=M,-0.122837960936445,0.884406959426169
+contents,accidental_damage,ff_B,(Intercept),-0.115027710713793,0.891341443856963
+contents,accidental_damage,ff_B,new_business=FALSE,-0.159221126454385,0.852807759761575
+contents,accidental_damage,ff_B,new_business=TRUE,0.0536010709260089,1.0550636226362
+contents,accidental_damage,sf_B,(Intercept),6.45350116297724,634.921369062455
+contents,flood,ff_B,(Intercept),-0.0932080343834678,0.911003960434174
+contents,flood,sf_B,(Intercept),9.11067937629198,9051.44213825377
+contents,flood,sf_B,"sum_insured_b=(-Inf,21900]",-0.161331060395271,0.851010288663677
+contents,flood,sf_B,"sum_insured_b=(21900,30800]",-0.0559330491115415,0.945602442694816
+contents,flood,sf_B,"sum_insured_b=(30800,41500]",-0.0540271031196075,0.947406428484075
+contents,flood,sf_B,"sum_insured_b=(41500,56700]",0.045555814660513,1.04660941913316
+contents,flood,sf_B,"sum_insured_b=(56700, Inf]",0.225735397965908,1.25324401048747

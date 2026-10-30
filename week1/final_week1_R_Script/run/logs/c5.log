@@ -1,0 +1,94 @@
+The tzdb package is not installed. Timezones will not be available to Arrow compute functions. If you get errors when using Arrow on datetimes, try running `install.packages('tzdb')` and trying again.
+10:53:20 | Workbook inputs/assumptions_wendy07_final2.xlsx: 348 feature-peril uses, 15 perils, 5 structural-zero rules
+10:53:21 | Positive claims: 160431 | claims limited at 2,000,000: 1
+10:53:21 | IBNR method: chain_ladder (overrides: buildings/subsidence=report_share_days)
+Warning message:
+Using an external vector in selections was deprecated in tidyselect 1.1.0.
+ℹ Please use `all_of()` or `any_of()` instead.
+  # Was:
+  data %>% select(id_cols)
+
+  # Now:
+  data %>% select(all_of(id_cols))
+
+See <https://tidyselect.r-lib.org/reference/faq-external-vector.html>. 
+Warning message:
+Structural-zero rules NOT applied (claims found): motor own_damage cover_type; buildings accidental_damage accidental_damage_cover; contents accidental_damage accidental_damage_cover 
+10:55:05 | 2023 motor/own_damage freq_sev: D2 raw 0.1614, developed 0.1615 (69s)
+10:55:35 | 2023 motor/own_damage tweedie: D2 raw 0.1631, developed 0.1635 (30s)
+10:56:27 | 2023 motor/third_party_prop freq_sev: D2 raw 0.0628, developed 0.0628 (51s)
+10:56:55 | 2023 motor/third_party_prop tweedie: D2 raw 0.0597, developed 0.0597 (28s)
+10:57:23 | 2023 motor/bodily_injury freq_sev: D2 raw 0.0633, developed 0.0561 (27s)
+10:57:45 | 2023 motor/bodily_injury tweedie: D2 raw 0.0614, developed 0.0518 (22s)
+10:58:15 | 2023 motor/theft freq_sev: D2 raw 0.0714, developed 0.0714 (29s)
+10:58:36 | 2023 motor/theft tweedie: D2 raw 0.0609, developed 0.0609 (21s)
+10:59:20 | 2023 motor/glass_hail freq_sev: D2 raw 0.139, developed 0.139 (43s)
+10:59:45 | 2023 motor/glass_hail tweedie: D2 raw 0.1379, developed 0.1378 (25s)
+11:01:59 | 2024 motor/own_damage freq_sev: D2 raw 0.168, developed 0.1682 (132s)
+11:03:21 | 2024 motor/own_damage tweedie: D2 raw 0.1734, developed 0.173 (82s)
+11:05:27 | 2024 motor/third_party_prop freq_sev: D2 raw 0.0525, developed 0.0527 (125s)
+11:06:30 | 2024 motor/third_party_prop tweedie: D2 raw 0.0508, developed 0.0509 (63s)
+11:07:46 | 2024 motor/bodily_injury freq_sev: D2 raw -0.0101, developed 0.0443 (75s)
+11:08:27 | 2024 motor/bodily_injury tweedie: D2 raw 0.0028, developed 0.0503 (40s)
+11:09:29 | 2024 motor/theft freq_sev: D2 raw 0.0843, developed 0.0841 (62s)
+11:10:08 | 2024 motor/theft tweedie: D2 raw 0.0771, developed 0.0769 (39s)
+11:11:19 | 2024 motor/glass_hail freq_sev: D2 raw 0.1365, developed 0.1367 (70s)
+11:12:07 | 2024 motor/glass_hail tweedie: D2 raw 0.135, developed 0.1351 (48s)
+11:12:57 | 2023 buildings/storm freq_sev: D2 raw 0.0526, developed 0.0526 (41s)
+11:13:20 | 2023 buildings/storm tweedie: D2 raw 0.0511, developed 0.051 (22s)
+11:13:50 | 2023 buildings/flood freq_sev: D2 raw 0.4745, developed 0.4744 (30s)
+11:14:18 | 2023 buildings/flood tweedie: D2 raw 0.4542, developed 0.4542 (27s)
+11:15:07 | 2023 buildings/escape_of_water freq_sev: D2 raw 0.0353, developed 0.0352 (48s)
+11:15:38 | 2023 buildings/escape_of_water tweedie: D2 raw 0.03, developed 0.0299 (31s)
+11:16:10 | 2023 buildings/subsidence freq_sev: D2 raw 0.068, developed 0.0676 (31s)
+11:16:23 | 2023 buildings/subsidence tweedie: D2 raw 0.06, developed 0.0598 (13s)
+11:16:36 | 2023 buildings/fire freq_sev: D2 raw 0.0148, developed 0.0148 (12s)
+11:16:47 | 2023 buildings/fire tweedie: D2 raw 0.018, developed 0.018 (11s)
+11:17:18 | 2023 buildings/accidental_damage freq_sev: D2 raw 0.1432, developed 0.1432 (30s)
+11:17:36 | 2023 buildings/accidental_damage tweedie: D2 raw 0.1395, developed 0.1395 (18s)
+11:18:39 | 2024 buildings/storm freq_sev: D2 raw 0.0632, developed 0.0638 (62s)
+11:19:09 | 2024 buildings/storm tweedie: D2 raw 0.0638, developed 0.0642 (29s)
+11:19:32 | 2024 buildings/flood freq_sev: D2 raw 0.4377, developed 0.4378 (23s)
+11:19:58 | 2024 buildings/flood tweedie: D2 raw 0.4423, developed 0.4422 (25s)
+11:20:32 | 2024 buildings/escape_of_water freq_sev: D2 raw 0.0468, developed 0.0469 (34s)
+11:21:00 | 2024 buildings/escape_of_water tweedie: D2 raw 0.0458, developed 0.0458 (28s)
+11:21:20 | 2024 buildings/subsidence freq_sev: D2 raw 0.0728, developed 0.0762 (19s)
+11:21:40 | 2024 buildings/subsidence tweedie: D2 raw 0.0745, developed 0.0805 (20s)
+11:22:00 | 2024 buildings/fire freq_sev: D2 raw 0.0309, developed 0.0309 (19s)
+11:22:22 | 2024 buildings/fire tweedie: D2 raw 0.0186, developed 0.0185 (22s)
+11:23:02 | 2024 buildings/accidental_damage freq_sev: D2 raw 0.1349, developed 0.1347 (40s)
+11:23:36 | 2024 buildings/accidental_damage tweedie: D2 raw 0.1265, developed 0.1263 (34s)
+11:24:00 | 2023 contents/theft freq_sev: D2 raw 0.0351, developed 0.0351 (18s)
+11:24:18 | 2023 contents/theft tweedie: D2 raw 0.0303, developed 0.0303 (18s)
+11:24:40 | 2023 contents/escape_of_water freq_sev: D2 raw 0.0279, developed 0.0279 (22s)
+11:24:55 | 2023 contents/escape_of_water tweedie: D2 raw 0.0265, developed 0.0265 (15s)
+11:25:28 | 2023 contents/accidental_damage freq_sev: D2 raw 0.1441, developed 0.1441 (32s)
+11:25:42 | 2023 contents/accidental_damage tweedie: D2 raw 0.1411, developed 0.1411 (14s)
+11:25:59 | 2023 contents/flood freq_sev: D2 raw 0.4795, developed 0.4794 (17s)
+11:26:09 | 2023 contents/flood tweedie: D2 raw 0.4607, developed 0.4606 (10s)
+11:26:40 | 2024 contents/theft freq_sev: D2 raw 0.0339, developed 0.0339 (29s)
+11:27:13 | 2024 contents/theft tweedie: D2 raw 0.0294, developed 0.0293 (33s)
+11:27:49 | 2024 contents/escape_of_water freq_sev: D2 raw 0.0426, developed 0.0429 (36s)
+11:28:20 | 2024 contents/escape_of_water tweedie: D2 raw 0.043, developed 0.0432 (30s)
+11:29:07 | 2024 contents/accidental_damage freq_sev: D2 raw 0.1424, developed 0.1425 (47s)
+11:29:39 | 2024 contents/accidental_damage tweedie: D2 raw 0.14, developed 0.1401 (31s)
+11:30:16 | 2024 contents/flood freq_sev: D2 raw 0.3939, developed 0.3937 (37s)
+11:30:44 | 2024 contents/flood tweedie: D2 raw 0.251, developed 0.25 (28s)
+11:30:47 | Method mix: sheet; own pick differs for 2 of 15 perils
+11:31:04 | Validation done (wendy07_c5): mean 2023-24 reported_raw D2 ALL 0.1027; buildings 0.0733; contents 0.0677; motor 0.0472
+11:35:22 | Final motor/own_damage (freq_sev): burn 109.97
+11:38:34 | Final motor/third_party_prop (freq_sev): burn 179.55
+11:39:50 | Final motor/bodily_injury (tweedie): burn 199.45
+11:44:22 | Final motor/theft (freq_sev): burn 49.01
+11:46:19 | Final motor/glass_hail (freq_sev): burn 25
+11:49:53 | Final buildings/storm (freq_sev): burn 59.97
+11:53:24 | Final buildings/flood (freq_sev): burn 132.89
+11:56:23 | Final buildings/escape_of_water (freq_sev): burn 126.25
+11:57:40 | Final buildings/subsidence (freq_sev): burn 60.86
+11:58:43 | Final buildings/fire (freq_sev): burn 99.62
+11:59:30 | Final buildings/accidental_damage (freq_sev): burn 8.65
+12:01:33 | Final contents/theft (freq_sev): burn 55.06
+12:02:22 | Final contents/escape_of_water (tweedie): burn 27.08
+12:03:49 | Final contents/accidental_damage (freq_sev): burn 13.36
+12:05:44 | Final contents/flood (freq_sev): burn 30.69
+12:05:46 | Done. wendy07_c5: output/4_check_reported/wendy07_c5 | card models/wendy_iteration_07/c5/model_card.md

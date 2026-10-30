@@ -1,0 +1,8 @@
+line,peril,param,value
+contents,escape_of_water,freq_max_depth,2
+contents,escape_of_water,freq_eta,0.05
+contents,escape_of_water,freq_min_child_weight,50
+contents,escape_of_water,freq_reg_lambda,50
+contents,escape_of_water,freq_colsample_bytree,0.5
+contents,escape_of_water,freq_subsample,0.6
+contents,escape_of_water,freq_min_split_loss,2

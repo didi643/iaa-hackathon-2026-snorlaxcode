@@ -1,0 +1,10 @@
+id,step,item,value,source,credibility_weight,sensitivity,note
+A001,2,Exposure,(period_end - period_start + 1) / 365 for every row,developed (week 1 rule),"",none: 609 emerging rows fixed,""
+A002,2,sum_insured unit error,> 5m buildings / > 2m contents and divisible by 1000 -> / 1000,developed (week 1 rule),"",low,""
+A003,2,construction_type map,"BRK brick, STN stone, WOD timber, MIX non_standard",judgement,"",MIX mapping checked in step 6,""
+A004,3,Age band edges,"17-24, 25-34, 35-49, 50-64, 65+ (inclusive)",emerging (band labels) + developed (exact ages),"",none: emerging years_licensed max 7/17/32/47 per band = upper age - 17,""
+A005,4,IBNR reporting pattern,developed chain ladder (counts) per peril,developed,1 (emerging lags match),see uncertainty.md: +/-5% on 2024 shares of BI/subsidence,""
+A006,4,Trend credibility constant k,2000,judgement,Z = n/(n+k),trend +/-2-3% a year (sens_low / sens_high in trend_table.csv),""
+A007,7,Ridge credibility lambda (frequency),30,judgement,m/(m+lambda) per factor level,LAMBDA 30 / 300 runs in step 9,""
+A008,8,NB credibility constant K_NB,300,judgement,Z = n/(n+K),nb_none / nb_full_emerging scenarios,""
+A009,7,Level credibility K (freq / sev / sparse sev),200 / 400 / 1200 claims,"judgement, checked X9a/X9b",Z = n/(n+K),halved: -0.0012 as-is; doubled vs 100/200: +0.0005,""

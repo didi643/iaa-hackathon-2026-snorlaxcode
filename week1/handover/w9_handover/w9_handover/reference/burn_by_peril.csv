@@ -1,0 +1,19 @@
+line,peril,final2,W8,W9,W9_vs_f2
+motor,own_damage,111.5,111.9,111.6,0.1
+motor,third_party_prop,182.2,182.5,167.6,-8.0
+motor,bodily_injury,203.2,203.1,202.5,-0.3
+motor,theft,49.5,49.1,49.0,-1.0
+motor,glass_hail,25.3,25.1,25.0,-0.9
+motor,LINE TOTAL,571.6,571.6,555.7,-2.8
+buildings,storm,60.7,60.8,58.9,-3.0
+buildings,flood,129.0,129.3,130.7,1.4
+buildings,escape_of_water,127.2,127.2,126.6,-0.5
+buildings,subsidence,61.5,61.3,64.5,5.0
+buildings,fire,100.8,100.6,100.0,-0.8
+buildings,accidental_damage,8.8,8.8,8.8,0.2
+buildings,LINE TOTAL,488.0,488.0,489.6,0.3
+contents,theft,55.1,55.0,55.0,-0.2
+contents,escape_of_water,27.3,27.2,27.0,-0.8
+contents,accidental_damage,13.4,13.4,13.4,-0.2
+contents,flood,30.1,30.3,30.3,0.5
+contents,LINE TOTAL,125.9,125.9,125.7,-0.2

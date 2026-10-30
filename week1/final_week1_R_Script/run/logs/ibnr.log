@@ -1,0 +1,14 @@
+The tzdb package is not installed. Timezones will not be available to Arrow compute functions. If you get errors when using Arrow on datetimes, try running `install.packages('tzdb')` and trying again.
+10:51:57 | Loading claims and policy rows
+10:52:03 | 160431 claims across 15 line x peril cells
+10:52:03 | Diagnostic: covariates on reporting lag
+10:52:04 | M6 stratifier: none (no material covariate)
+10:52:04 | Backtest 2022-12-31+12m
+10:52:58 | Backtest 2022-12-31+24m
+10:53:49 | Backtest 2023-06-30+12m
+10:55:03 | Backtest 2023-12-31+12m
+10:56:43 | Best primary: M2_chain_ladder; selected (simplest within 1 SE): M2_chain_ladder
+10:56:43 | Fitting all methods at 2024-12-31
+10:58:51 | Diagnostics: severity by lag, cost-weighted factors, open claims
+10:58:51 | Diagnostics: row-level factors
+10:58:55 | Done: output/3b_ibnr

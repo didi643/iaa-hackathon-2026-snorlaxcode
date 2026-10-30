@@ -1,0 +1,71 @@
+The tzdb package is not installed. Timezones will not be available to Arrow compute functions. If you get errors when using Arrow on datetimes, try running `install.packages('tzdb')` and trying again.
+10:58:58 | Phase 1: ingest and clean raw data
+10:59:48 | Phase 2: IBNR and long-tail rules
+10:59:48 | Phase 3: engineered and claim-history features
+11:00:10 | motor: prepared 979968 train and 254986 test rows
+11:00:22 | buildings: prepared 707726 train and 184155 test rows
+11:00:35 | contents: prepared 721617 train and 187498 test rows
+           used  (Mb) gc trigger   (Mb)  max used   (Mb)
+Ncells  4135121 220.9   13679925  730.6  13679925  730.6
+Vcells 20108105 153.5  360094712 2747.4 541168296 4128.8
+11:00:38 | Long-tail perils: buildings.subsidence, motor.bodily_injury
+11:00:38 | XGBoost tuning: 900s budget
+11:10:07 | motor: XGBoost tuning tried 36 configurations, best holdout D2 0.0562
+11:15:00 | buildings: XGBoost tuning tried 42 configurations, best holdout D2 0.0844
+11:18:08 | contents: XGBoost tuning tried 23 configurations, best holdout D2 0.0593
+11:19:49 | motor 2022: GLMs fitted in 94s
+11:21:22 | motor 2022: lgb per-peril + Tweedie bags fitted in 93s
+11:23:27 | motor 2022: xgb per-peril + Tweedie bags fitted in 125s
+11:25:28 | Validation 2022 / motor done
+11:26:15 | buildings 2022: GLMs fitted in 43s
+11:27:46 | buildings 2022: lgb per-peril + Tweedie bags fitted in 91s
+11:29:29 | buildings 2022: xgb per-peril + Tweedie bags fitted in 102s
+11:31:16 | Validation 2022 / buildings done
+11:32:14 | contents 2022: GLMs fitted in 51s
+11:34:28 | contents 2022: lgb per-peril + Tweedie bags fitted in 135s
+11:35:36 | contents 2022: xgb per-peril + Tweedie bags fitted in 68s
+11:37:41 | Validation 2022 / contents done
+11:42:32 | motor 2023: GLMs fitted in 273s
+11:46:21 | motor 2023: lgb per-peril + Tweedie bags fitted in 229s
+11:55:43 | motor 2023: xgb per-peril + Tweedie bags fitted in 562s
+11:58:02 | Validation 2023 / motor done
+11:59:36 | buildings 2023: GLMs fitted in 91s
+12:01:23 | buildings 2023: lgb per-peril + Tweedie bags fitted in 107s
+12:04:50 | buildings 2023: xgb per-peril + Tweedie bags fitted in 207s
+12:06:29 | Validation 2023 / buildings done
+12:07:16 | contents 2023: GLMs fitted in 44s
+12:08:17 | contents 2023: lgb per-peril + Tweedie bags fitted in 60s
+12:09:43 | contents 2023: xgb per-peril + Tweedie bags fitted in 86s
+12:10:52 | Validation 2023 / contents done
+12:12:57 | motor 2024: GLMs fitted in 120s
+12:16:03 | motor 2024: lgb per-peril + Tweedie bags fitted in 185s
+12:21:09 | motor 2024: xgb per-peril + Tweedie bags fitted in 306s
+12:23:19 | Validation 2024 / motor done
+12:24:31 | buildings 2024: GLMs fitted in 68s
+12:26:47 | buildings 2024: lgb per-peril + Tweedie bags fitted in 136s
+12:30:18 | buildings 2024: xgb per-peril + Tweedie bags fitted in 212s
+12:32:10 | Validation 2024 / buildings done
+12:33:01 | contents 2024: GLMs fitted in 47s
+12:34:26 | contents 2024: lgb per-peril + Tweedie bags fitted in 85s
+12:36:35 | contents 2024: xgb per-peril + Tweedie bags fitted in 129s
+12:37:49 | Validation 2024 / contents done
+12:41:23 | motor 2025: GLMs fitted in 132s
+12:45:33 | motor 2025: lgb per-peril + Tweedie bags fitted in 250s
+12:53:19 | motor 2025: xgb per-peril + Tweedie bags fitted in 465s
+12:54:32 | motor: final blend scored on test, cost per exposure-year 603.26
+12:55:49 | buildings 2025: GLMs fitted in 73s
+12:58:18 | buildings 2025: lgb per-peril + Tweedie bags fitted in 149s
+13:04:33 | buildings 2025: xgb per-peril + Tweedie bags fitted in 375s
+13:05:30 | buildings: final blend scored on test, cost per exposure-year 487.44
+13:06:27 | contents 2025: GLMs fitted in 53s
+13:08:57 | contents 2025: lgb per-peril + Tweedie bags fitted in 150s
+13:12:13 | contents 2025: xgb per-peril + Tweedie bags fitted in 196s
+13:13:01 | contents: final blend scored on test, cost per exposure-year 125.17
+[1] TRUE
+13:14:05 | Replication check passed
+Warning messages:
+1: In system2("git", c("rev-parse", "--short", "HEAD"), stdout = TRUE,  :
+  running command '"git" rev-parse --short HEAD' had status 128
+2: In system2("git", c("status", "--porcelain", "--", "R"), stdout = TRUE,  :
+  running command '"git" status --porcelain -- R' had status 128
+13:14:06 | Done. Card: models/sam_iteration_03/model_card.md | Submission: output/submission/submission_20261025_1058.csv

@@ -1,0 +1,16 @@
+peril,cap,line
+own_damage,13005.31885,motor
+glass_hail,5873.07239999999,motor
+third_party_prop,19749.5384000002,motor
+bodily_injury,187516.0245,motor
+theft,38459.5149,motor
+storm,19764.1719,buildings
+subsidence,138263.216000001,buildings
+accidental_damage,6560.7152,buildings
+flood,208045.474499999,buildings
+escape_of_water,34856.3536,buildings
+fire,369276.9,buildings
+accidental_damage,4821.2393,contents
+flood,60320.1967000002,contents
+escape_of_water,16952.6895,contents
+theft,23478.005,contents

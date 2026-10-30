@@ -1,0 +1,64 @@
+The tzdb package is not installed. Timezones will not be available to Arrow compute functions. If you get errors when using Arrow on datetimes, try running `install.packages('tzdb')` and trying again.
+13:14:08 | Copying prepared data from data/sam03 (same phases 1-3 as SAM 3)
+[1] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
+13:14:09 | Long-tail perils: buildings.subsidence, motor.bodily_injury
+13:14:09 | XGBoost tuning: 900s budget
+13:17:04 | motor: XGBoost tuning tried 15 configurations, best holdout D2 0.0564
+13:19:22 | buildings: XGBoost tuning tried 28 configurations, best holdout D2 0.0844
+13:21:40 | contents: XGBoost tuning tried 23 configurations, best holdout D2 0.0593
+13:22:50 | motor 2022: GLMs fitted in 65s
+13:23:52 | motor 2022: lgb per-peril + Tweedie bags fitted in 61s
+13:25:24 | motor 2022: xgb per-peril + Tweedie bags fitted in 92s
+13:26:54 | Validation 2022 / motor done
+13:27:27 | buildings 2022: GLMs fitted in 30s
+13:28:21 | buildings 2022: lgb per-peril + Tweedie bags fitted in 54s
+13:29:43 | buildings 2022: xgb per-peril + Tweedie bags fitted in 81s
+13:30:53 | Validation 2022 / buildings done
+13:31:16 | contents 2022: GLMs fitted in 20s
+13:31:50 | contents 2022: lgb per-peril + Tweedie bags fitted in 34s
+13:32:18 | contents 2022: xgb per-peril + Tweedie bags fitted in 28s
+13:33:10 | Validation 2022 / contents done
+13:35:04 | motor 2023: GLMs fitted in 108s
+13:36:41 | motor 2023: lgb per-peril + Tweedie bags fitted in 97s
+13:40:39 | motor 2023: xgb per-peril + Tweedie bags fitted in 238s
+13:42:43 | Validation 2023 / motor done
+13:43:53 | buildings 2023: GLMs fitted in 68s
+13:45:10 | buildings 2023: lgb per-peril + Tweedie bags fitted in 76s
+13:47:21 | buildings 2023: xgb per-peril + Tweedie bags fitted in 131s
+13:48:58 | Validation 2023 / buildings done
+13:49:44 | contents 2023: GLMs fitted in 43s
+13:50:47 | contents 2023: lgb per-peril + Tweedie bags fitted in 63s
+13:52:17 | contents 2023: xgb per-peril + Tweedie bags fitted in 90s
+13:53:29 | Validation 2023 / contents done
+13:55:45 | motor 2024: GLMs fitted in 132s
+13:58:58 | motor 2024: lgb per-peril + Tweedie bags fitted in 193s
+14:04:13 | motor 2024: xgb per-peril + Tweedie bags fitted in 315s
+14:06:26 | Validation 2024 / motor done
+14:07:40 | buildings 2024: GLMs fitted in 71s
+14:09:43 | buildings 2024: lgb per-peril + Tweedie bags fitted in 123s
+14:13:38 | buildings 2024: xgb per-peril + Tweedie bags fitted in 235s
+14:15:28 | Validation 2024 / buildings done
+14:16:20 | contents 2024: GLMs fitted in 48s
+14:17:45 | contents 2024: lgb per-peril + Tweedie bags fitted in 85s
+14:20:14 | contents 2024: xgb per-peril + Tweedie bags fitted in 149s
+14:21:33 | Validation 2024 / contents done
+14:25:19 | motor 2025: GLMs fitted in 145s
+14:30:14 | motor 2025: lgb per-peril + Tweedie bags fitted in 295s
+14:38:44 | motor 2025: xgb per-peril + Tweedie bags fitted in 509s
+14:39:59 | motor: final blend scored on test, cost per exposure-year 607.41
+14:41:19 | buildings 2025: GLMs fitted in 77s
+14:43:35 | buildings 2025: lgb per-peril + Tweedie bags fitted in 136s
+14:49:16 | buildings 2025: xgb per-peril + Tweedie bags fitted in 340s
+14:50:08 | buildings: final blend scored on test, cost per exposure-year 489.24
+14:51:06 | contents 2025: GLMs fitted in 55s
+14:53:16 | contents 2025: lgb per-peril + Tweedie bags fitted in 131s
+14:55:56 | contents 2025: xgb per-peril + Tweedie bags fitted in 160s
+14:56:40 | contents: final blend scored on test, cost per exposure-year 125.83
+[1] TRUE
+14:57:39 | Replication check passed
+Warning messages:
+1: In system2("git", c("rev-parse", "--short", "HEAD"), stdout = TRUE,  :
+  running command '"git" rev-parse --short HEAD' had status 128
+2: In system2("git", c("status", "--porcelain", "--", "R"), stdout = TRUE,  :
+  running command '"git" status --porcelain -- R' had status 128
+14:57:40 | Done. Card: models/sam_iteration_04/model_card.md | Submission: output/submission/submission_20261025_1314.csv

@@ -1,0 +1,16 @@
+line,model,weight
+motor,peril_glm,0.4
+motor,peril_lgb,0
+motor,peril_xgb,0.4
+motor,lgb_tweedie,0
+motor,xgb_tweedie,0.2
+buildings,peril_glm,0.2
+buildings,peril_lgb,0
+buildings,peril_xgb,0.7
+buildings,lgb_tweedie,0
+buildings,xgb_tweedie,0.1
+contents,peril_glm,0.3
+contents,peril_lgb,0
+contents,peril_xgb,0.4
+contents,lgb_tweedie,0
+contents,xgb_tweedie,0.3

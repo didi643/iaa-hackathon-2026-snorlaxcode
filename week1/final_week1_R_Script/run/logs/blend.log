@@ -1,0 +1,44 @@
+The tzdb package is not installed. Timezones will not be available to Arrow compute functions. If you get errors when using Arrow on datetimes, try running `install.packages('tzdb')` and trying again.
+         line             component   rows total_ratio max_abs_rel median_abs_rel p99_abs_rel spearman
+       <char>                <char>  <num>       <num>       <num>          <num>       <num>    <num>
+ 1:     motor         c5_own_damage 255000      0.9994   1.631e-01      1.319e-02   6.202e-02   0.9998
+ 2:     motor   c5_third_party_prop 255000      1.0010   1.397e-01      1.260e-02   5.811e-02   0.9996
+ 3:     motor  lad_third_party_prop 255000      1.0000   5.957e-08      2.076e-08   5.292e-08   1.0000
+ 4:     motor      c5_bodily_injury 255000      0.9958   3.866e-01      2.919e-02   1.540e-01   0.9976
+ 5:     motor              c5_theft 231300      1.0010   1.386e-01      1.235e-02   5.679e-02   0.9996
+ 6:     motor         c5_glass_hail 207500      1.0010   1.191e-01      1.125e-02   5.079e-02   0.9997
+ 7:     motor        lad_glass_hail 255000      1.0000   5.941e-08      2.066e-08   5.276e-08   1.0000
+ 8:     motor                  sam3 255000      1.0000   5.948e-08      2.068e-08   5.293e-08   1.0000
+ 9:     motor                     N  58580      1.0000   0.000e+00      0.000e+00   0.000e+00   1.0000
+10:     motor                     E 216100      1.0000   5.953e-08      2.064e-08   5.277e-08   1.0000
+11: buildings              c5_storm 184200      0.9975   1.298e-01      1.519e-02   6.597e-02   0.9997
+12: buildings             lad_storm 184200      1.0000   5.942e-08      2.067e-08   5.282e-08   1.0000
+13: buildings              c5_flood 184200      1.0010   1.474e-01      2.164e-02   8.446e-02   0.9999
+14: buildings    c5_escape_of_water 184200      0.9998   1.711e-01      1.486e-02   6.714e-02   0.9995
+15: buildings         c5_subsidence 184200      0.9986   1.514e-01      1.920e-02   7.704e-02   0.9989
+16: buildings        lad_subsidence 184200      1.0000   5.939e-08      2.044e-08   5.260e-08   1.0000
+17: buildings               c5_fire 184200      0.9989   1.873e-01      2.088e-02   7.422e-02   0.9989
+18: buildings              lad_fire 184200      1.0000   5.951e-08      2.061e-08   5.282e-08   1.0000
+19: buildings  c5_accidental_damage 184200      1.0010   1.400e-01      1.367e-02   5.951e-02   0.9997
+20: buildings lad_accidental_damage 184200      1.0000   5.938e-08      2.065e-08   5.290e-08   1.0000
+21: buildings                  sam3 184200      1.0000   5.936e-08      2.067e-08   5.296e-08   1.0000
+22: buildings                     N  17120      1.0000   0.000e+00      0.000e+00   0.000e+00   1.0000
+23: buildings                     E 156300      1.0000   5.949e-08      2.061e-08   5.273e-08   1.0000
+24:  contents              c5_theft 187500      1.0010   1.845e-01      1.523e-02   6.497e-02   0.9994
+25:  contents    c5_escape_of_water 187500      0.9939   3.296e-01      2.597e-02   1.385e-01   0.9982
+26:  contents   lad_escape_of_water 187500      1.0000   5.937e-08      2.060e-08   5.284e-08   1.0000
+27:  contents  c5_accidental_damage 187500      1.0000   1.130e-01      1.221e-02   5.409e-02   0.9998
+28:  contents              c5_flood 187500      0.9987   1.684e-01      2.609e-02   9.948e-02   0.9998
+29:  contents             lad_flood 187500      1.0000   5.949e-08      2.058e-08   5.290e-08   1.0000
+30:  contents                  sam3 187500      1.0000   5.944e-08      2.065e-08   5.289e-08   1.0000
+31:  contents                     N  15870      1.0000   0.000e+00      0.000e+00   0.000e+00   1.0000
+32:  contents                     E 159100      1.0000   5.933e-08      2.065e-08   5.276e-08   1.0000
+33:     motor                motor2 255000      1.0000   0.000e+00      0.000e+00   0.000e+00   1.0000
+         line             component   rows total_ratio max_abs_rel median_abs_rel p99_abs_rel spearman
+       <char>                <char>  <num>       <num>       <num>          <num>       <num>    <num>
+     line   rows total_ratio max_abs_rel median_abs_rel p99_abs_rel spearman
+   <char>  <num>       <num>       <num>          <num>       <num>    <num>
+1:      M 255000      0.9986     0.08645       0.005249     0.02700   0.9999
+2:      B 184200      0.9999     0.09170       0.005226     0.02325   0.9999
+3:      C 187500      0.9999     0.11260       0.007308     0.03620   0.9999
+15:17:58 | Final file output/submission/submission_final_week1.csv MD5 6c7b50b0cac20dbf81817d83363ac50b (submitted 148a9f430289965107f40175dd2953ca); max row difference vs submitted 0.113

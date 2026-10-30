@@ -1,0 +1,6 @@
+# Keep prediction files and model inputs byte-identical on every machine (the MD5 checks depend on it)
+*.csv -text
+*.md5 -text
+*.parquet binary
+*.xlsx binary
+*.rds binary

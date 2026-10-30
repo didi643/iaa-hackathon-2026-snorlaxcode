@@ -1,0 +1,494 @@
+# 4_models_iterwendy03.R ------------------------------------------------------
+# WENDY 3 (iteration 3): one XGBoost Tweedie model per peril in every line; line cost = sum of its peril models.
+# Frozen once its submission is logged; start the next iteration as a copy of this file.
+#   Perils:      PERILS in week1/R/0_setup.R (motor 5, buildings 6, contents 4 -> 15 models); target y_cost_<peril>.
+#   Targets:     peril row cost capped at p99.9 of that peril's positive row costs, loaded back to the peril total;
+#                rows scaled by a peril IBNR count factor (same method as step 5, using the peril's own report lags).
+#   Balance:     each peril model is scaled so its training predictions add up to its training target (Tweedie
+#                boosting with early stopping under-predicts the total for sparse, heavy-tailed perils).
+#   Grid search: per peril, random order over XGB_GRID (default first) until the peril's budget runs out, tuned on a
+#                20% policy holdout of 2021-23 with the Kaggle metric, so the 2024 validation year stays out of time.
+#   Validation:  single fold - fit on 2021-23, score 2024 (Tweedie D2, p = 1.5), reported per peril and per line
+#                (sum of perils) against iteration 2's 2024 fold.
+#   Final fit:   2021-24, scores the 2025 test rows -> submission.
+# Run:     Rscript week1/R/4_models_iterwendy03.R  (quick test: set env var XGB_TUNE_SECONDS=60 first)
+# Outputs: week1/output/4_models/ (model_report.md, validation CSVs, run_history.csv, plots)
+#          week1/output/submission/submission_provisional.csv and an archived copy submission_<run id>.csv
+#          week1/models/wendy_iteration_03/ (model_card.md + CSVs + plots + fitted models; tracked in git)
+
+source("week1/R/0_setup.R")
+source("week1/R/model_io.R")
+suppressPackageStartupMessages(library(xgboost))
+STEP <- "4_models"
+RUN_ID <- format(Sys.time(), "%Y%m%d_%H%M")
+ITERATION <- "WENDY 3"
+ITERATION_NOTE <- paste("One XGBoost Tweedie model per peril (motor 5, buildings 6, contents 4); the line prediction",
+                        "is the sum of its peril predictions. Each peril has its own p99.9 large-loss cap, IBNR factor",
+                        "(from its own report lags), hyper-parameters (random grid search on a 20% policy holdout",
+                        "of 2021-23) and a balance factor so its training predictions add up to the training target.",
+                        "Validated on 2024 only (fit on 2021-23). Same features as iteration 2.")
+ITER_DIR <- file.path("week1", "models", "wendy_iteration_03")
+MODEL <- "xgb_tweedie"          # one per peril
+LINE_MODEL <- "xgb_peril_sum"   # saved line model = sum of its peril models
+VALID_YEARS <- 2024   # single validation fold: fit on 2021-23, score 2024
+COMPARE_DIR <- file.path("week1", "models", "iteration_02")   # previous single-model-per-line XGBoost
+
+# Grid search: the budget (seconds, all perils) is split by line, then equally over the line's perils
+XGB_TUNE_SECONDS <- as.numeric(Sys.getenv("XGB_TUNE_SECONDS", "900"))
+XGB_TUNE_SHARE <- c(motor = 0.4, buildings = 0.3, contents = 0.3)
+XGB_TUNE_YEARS <- 2021:2023
+XGB_MAX_ROUNDS <- 2000
+XGB_DEFAULT <- data.table(max_depth = 4, learning_rate = 0.1, min_child_weight = 10, subsample = 0.9,
+                          colsample_bytree = 0.8, reg_lambda = 1, tweedie_variance_power = 1.5)
+XGB_GRID <- CJ(max_depth = c(3, 4, 6, 8), learning_rate = c(0.03, 0.05, 0.1), min_child_weight = c(1, 10, 50),
+               subsample = c(0.7, 0.9), colsample_bytree = c(0.6, 0.8, 1), reg_lambda = c(1, 10),
+               tweedie_variance_power = c(1.3, 1.5, 1.7))
+
+# Each fit gets its own seed by line, peril and year (offset 600 keeps them apart from iterations 1-2)
+fit_seed <- function(ln, pr, year) SEED + 1000 * match(ln, LINES) + 600 + 20 * match(pr, PERILS[[ln]]) + (year - 2020)
+peril_col <- function(pr) paste0("y_cost_", pr)
+
+# Peril IBNR count factors: step 5's method per (line, peril) -------------------------------------
+# Lag distribution from 2021-22 losses; expected share of claims already reported at the valuation date
+cl <- read_clean("claims_matched")[counts == TRUE & !is.na(row_id)]
+cl[, `:=`(lag = as.numeric(report_date - loss_date), loss_year = year(loss_date))]
+ibnr_peril <- rbindlist(lapply(LINES, function(ln) rbindlist(lapply(PERILS[[ln]], function(pr) {
+  lags <- cl[line == ln & peril == pr & loss_year %in% 2021:2022, lag]
+  F <- ecdf(lags)
+  rbindlist(lapply(TRAIN_YEARS, function(y) {
+    days <- seq(as.Date(paste0(y, "-01-01")), as.Date(paste0(y, "-12-31")), by = "day")
+    share <- mean(F(as.numeric(VALUATION_DATE - days)))
+    data.table(line = ln, peril = pr, policy_year = y, lag_claims = length(lags), median_lag_days = median(lags),
+               reported_share = share, ibnr_factor = 1 / share)
+  }))
+}))))
+rm(cl); gc(verbose = FALSE)
+save_csv(ibnr_peril, STEP, "ibnr_factors_by_peril.csv")
+ibnr_of <- function(ln, pr, years) {
+  f <- ibnr_peril[line == ln & peril == pr][match(years, policy_year), ibnr_factor]
+  f[is.na(f)] <- 1
+  f
+}
+
+# Targets ------------------------------------------------------------------------------------
+# Sets tr$y_target for one peril (overwritten for the next peril) and returns its cap and loading
+prepare_targets <- function(tr, ln, pr) {
+  y <- tr[[peril_col(pr)]]
+  cap <- quantile(y[y > 0], LARGE_LOSS_QUANTILE, names = FALSE)
+  capped <- pmin(y, cap)
+  tr[, y_target := capped * ibnr_of(ln, pr, policy_year)]
+  list(line = ln, peril = pr, cap = cap, loading = sum(y) / sum(capped))
+}
+
+# XGBoost ----------------------------------------------------------------------------------------
+# Categoricals as integer codes ordered by their training cost rate for this peril
+make_xgb_encoder <- function(tr, feats) {
+  cats <- feats[vapply(feats, function(f) is.character(tr[[f]]), logical(1))]
+  lv <- lapply(setNames(cats, cats), function(f) {
+    r <- tr[, .(rate = sum(y_target) / sum(exposure)), by = f]
+    r[order(rate, get(f))][[f]]
+  })
+  list(cat_levels = lv, to_mat = function(dt) lgb_matrix(dt, feats, lv))
+}
+
+xgb_train <- function(X, rate, w, hold, cfg) {
+  dtr <- xgb.DMatrix(X[!hold, , drop = FALSE], label = rate[!hold], weight = w[!hold], nthread = 4)
+  dva <- xgb.DMatrix(X[hold, , drop = FALSE], label = rate[hold], weight = w[hold], nthread = 4)
+  params <- xgb.params(objective = "reg:tweedie", tweedie_variance_power = cfg$tweedie_variance_power,
+                       learning_rate = cfg$learning_rate, max_depth = cfg$max_depth,
+                       min_child_weight = cfg$min_child_weight, subsample = cfg$subsample,
+                       colsample_bytree = cfg$colsample_bytree, reg_lambda = cfg$reg_lambda,
+                       tree_method = "hist", nthread = 4, seed = SEED,
+                       eval_metric = paste0("tweedie-nloglik@", cfg$tweedie_variance_power))
+  xgb.train(params = params, data = dtr, nrounds = XGB_MAX_ROUNDS, evals = list(holdout = dva),
+            early_stopping_rounds = 50, verbose = 0)
+}
+
+# Tweedie boosting (p > 1) does not reproduce the training total, and sparse perils stop after few rounds, so
+# predictions are scaled to match the target total on the fitting rows (folded into the artifact's loading)
+balance_factor <- function(m, X, y, w, rows = TRUE) {
+  sum(y[rows]) / sum(predict(m, X[rows, , drop = FALSE]) * w[rows])
+}
+
+# Fits one peril on tr (10% policy holdout for early stopping) and scores te with score_model()
+fit_xgb_tweedie <- function(tr, te, ctx) {
+  cfg <- XGB_TUNED[[ctx$line]][[ctx$peril]]
+  feats <- feature_cols(tr)
+  enc <- make_xgb_encoder(tr, feats)
+  pol <- unique(tr$policy_id)
+  hold <- tr$policy_id %in% sample(pol, round(0.1 * length(pol)))
+  X <- enc$to_mat(tr)
+  m <- xgb_train(X, tr$y_target / tr$exposure, tr$exposure, hold, cfg)
+  calib <- balance_factor(m, X, tr$y_target, tr$exposure)
+  rm(X); gc(verbose = FALSE)
+  best_iter <- as.integer(xgb.attr(m, "best_iteration"))
+  art <- list(model = MODEL, line = ctx$line, peril = ctx$peril, loading = ctx$loading * calib, cap_loading = ctx$loading,
+              balance = calib, cap = ctx$cap, features = feats, cat_levels = enc$cat_levels, best_iter = best_iter,
+              params = cfg, booster = m)
+  list(artifact = art, pred = score_model(art, te), features = feats, balance = calib,
+       importance = as.data.table(xgb.importance(model = m)), best_iter = best_iter)
+}
+
+# Metrics --------------------------------------------------------------------------------------------
+tweedie_dev <- function(y, mu, p = TWEEDIE_P) {
+  mu <- pmax(mu, 1e-6)
+  2 * mean(ifelse(y > 0, y^(2 - p) / ((1 - p) * (2 - p)), 0) - y * mu^(1 - p) / (1 - p) + mu^(2 - p) / (2 - p))
+}
+norm_gini <- function(y, s) {
+  g <- function(a, s) {
+    a <- a[order(s, decreasing = TRUE)]
+    n <- length(a)
+    sum(cumsum(a) / sum(a) - seq_len(n) / n) / n
+  }
+  g(y, s) / g(y, y)
+}
+# Kaggle metric: Tweedie D2 (p = 1.5) vs a constant-rate baseline (one cost per exposure-year x exposure)
+d2_tweedie <- function(y, pred, exposure, p = TWEEDIE_P) {
+  baseline <- exposure * sum(y) / sum(exposure)
+  1 - tweedie_dev(y, pred, p) / tweedie_dev(y, baseline, p)
+}
+metrics <- function(y, pred, exposure, y_dev) {
+  data.table(d2 = d2_tweedie(y, pred, exposure), tweedie_dev = tweedie_dev(y, pred), gini = norm_gini(y, pred),
+             pred_vs_reported = sum(pred) / sum(y), pred_vs_developed = sum(pred) / y_dev)
+}
+
+# 0. Grid search per peril on 2021-23 only (20% policy holdout), so the 2024 validation stays clean ----------
+tune_xgb <- function(dt, ln, pr, budget) {
+  prepare_targets(dt, ln, pr)
+  enc <- make_xgb_encoder(dt, feature_cols(dt))
+  X <- enc$to_mat(dt)
+  rate <- dt$y_target / dt$exposure
+  set.seed(SEED + 1000 * match(ln, LINES) + 20 * match(pr, PERILS[[ln]]))
+  pol <- unique(dt$policy_id)
+  hold <- dt$policy_id %in% sample(pol, round(0.2 * length(pol)))
+  grid <- unique(rbind(XGB_DEFAULT, XGB_GRID[sample(.N)]))
+  t0 <- Sys.time(); out <- list(); secs <- numeric()
+  for (i in seq_len(nrow(grid))) {
+    elapsed <- as.numeric(difftime(Sys.time(), t0, units = "secs"))
+    # stop when the next configuration would likely overrun the budget (always try at least the default)
+    if (i > 1 && elapsed + median(secs) > budget) break
+    s <- Sys.time()
+    m <- xgb_train(X, rate, dt$exposure, hold, grid[i])
+    calib <- balance_factor(m, X, dt$y_target, dt$exposure, !hold)
+    pred <- predict(m, X[hold, , drop = FALSE]) * dt$exposure[hold] * calib
+    secs <- c(secs, as.numeric(difftime(Sys.time(), s, units = "secs")))
+    out[[i]] <- cbind(data.table(line = ln, peril = pr, config = i), grid[i],
+                      data.table(holdout_d2 = d2_tweedie(dt$y_target[hold], pred, dt$exposure[hold]),
+                                 rounds = as.integer(xgb.attr(m, "best_iteration")), seconds = round(tail(secs, 1), 1)))
+    log_msg("Grid search ", ln, "/", pr, " config ", i, ": D2 ", round(out[[i]]$holdout_d2, 4),
+            " in ", round(tail(secs, 1)), "s")
+  }
+  rbindlist(out)
+}
+xgb_tuning <- rbindlist(lapply(LINES, function(ln) {
+  dt <- read_clean(paste0("train_", ln))[policy_year %in% XGB_TUNE_YEARS]
+  budget <- XGB_TUNE_SECONDS * XGB_TUNE_SHARE[[ln]] / length(PERILS[[ln]])
+  rbindlist(lapply(PERILS[[ln]], function(pr) tune_xgb(dt, ln, pr, budget)))
+}))
+xgb_tuning[, rank := frank(-holdout_d2, ties.method = "first"), by = .(line, peril)]
+XGB_TUNED <- lapply(setNames(LINES, LINES), function(ln) lapply(setNames(PERILS[[ln]], PERILS[[ln]]), function(pr) {
+  xgb_tuning[line == ln & peril == pr & rank == 1, names(XGB_DEFAULT), with = FALSE]
+}))
+save_csv(xgb_tuning, STEP, "xgb_tuning_by_peril.csv")
+
+# 1. Validation: fit each peril on the years before each validation year, score that year ---------------
+results <- list(); peril_results <- list(); lift <- list(); valid_preds <- list()
+for (vy in VALID_YEARS) {
+  for (ln in LINES) {
+    dt <- read_clean(paste0("train_", ln))
+    tr <- dt[policy_year < vy]
+    va <- dt[policy_year == vy]
+    rm(dt); gc(verbose = FALSE)
+    line_pred <- numeric(nrow(va)); y_dev <- 0; rounds <- 0L
+    t_line <- Sys.time()
+    for (pr in PERILS[[ln]]) {
+      ctx <- prepare_targets(tr, ln, pr)
+      t0 <- Sys.time()
+      set.seed(fit_seed(ln, pr, vy))
+      fit <- fit_xgb_tweedie(tr, va, ctx)
+      secs <- as.numeric(difftime(Sys.time(), t0, units = "secs"))
+      ya <- va[[peril_col(pr)]]
+      ya_dev <- sum(ya) * ibnr_of(ln, pr, vy)
+      peril_results[[paste(vy, ln, pr)]] <- cbind(data.table(valid_year = vy, line = ln, peril = pr, model = MODEL),
+                                                  metrics(ya, fit$pred, va$exposure, ya_dev),
+                                                  data.table(cost_share = sum(ya) / sum(va$y_cost), balance = fit$balance,
+                                                             rounds = fit$best_iter, fit_seconds = round(secs)))
+      line_pred <- line_pred + fit$pred
+      y_dev <- y_dev + ya_dev
+      rounds <- rounds + fit$best_iter
+      log_msg(vy, " / ", ln, " / ", pr, " validated in ", round(secs), "s (D2 ",
+              round(peril_results[[paste(vy, ln, pr)]]$d2, 4), ")")
+    }
+    secs <- as.numeric(difftime(Sys.time(), t_line, units = "secs"))
+    valid_preds[[paste(vy, ln)]] <- data.table(valid_year = vy, line = ln, exposure = va$exposure,
+                                               actual = va$y_cost, pred = line_pred)
+    results[[paste(vy, ln)]] <- cbind(data.table(valid_year = vy, line = ln, model = LINE_MODEL),
+                                      metrics(va$y_cost, line_pred, va$exposure, y_dev),
+                                      data.table(total_rounds = rounds, fit_seconds = round(secs)))
+    if (vy == 2024) {
+      dec <- data.table(actual = va$y_cost, pred = line_pred)[, decile := ceiling(10 * frank(pred, ties.method = "first") / .N)]
+      lift[[ln]] <- dec[, .(actual = mean(actual), pred = mean(pred)), by = decile][, line := ln]
+    }
+    log_msg(vy, " / ", ln, " (sum of perils) validated in ", round(secs), "s")
+    rm(tr, va); gc(verbose = FALSE)
+  }
+}
+res <- rbindlist(results)
+peril_res <- rbindlist(peril_results)
+vp_all <- rbindlist(valid_preds)
+
+# Line D2 uses the line's own baseline; ALL uses one baseline over all rows, as Kaggle scores the file.
+# deviance_share = the line's share of the remaining combined error (cutting it by x% lifts ALL by ~x% x share x (1 - D2))
+line_score <- rbindlist(lapply(VALID_YEARS, function(vy) {
+  v <- vp_all[valid_year == vy]
+  by_line <- v[, .(d2 = d2_tweedie(actual, pred, exposure), gini = norm_gini(actual, pred),
+                   deviance = tweedie_dev(actual, pred) * .N), by = line]
+  tot <- data.table(line = "ALL", d2 = d2_tweedie(v$actual, v$pred, v$exposure), gini = norm_gini(v$actual, v$pred),
+                    deviance = sum(by_line$deviance))
+  rbind(by_line, tot)[, `:=`(valid_year = vy, deviance_share = deviance / sum(by_line$deviance))]
+}))
+line_score_wide <- dcast(line_score, line ~ valid_year, value.var = c("d2", "gini", "deviance_share"))
+line_score_wide <- line_score_wide[match(c(LINES, "ALL"), line)]
+peril_score_wide <- dcast(peril_res, line + peril ~ valid_year,
+                          value.var = c("d2", "gini", "pred_vs_developed", "cost_share"))
+peril_score_wide <- peril_score_wide[order(match(line, LINES), -cost_share_2024)]
+
+# Iteration 2's 2024 fold was also fit on 2021-23, so the per-peril split can be compared line by line
+compare <- NULL
+compare_file <- file.path(COMPARE_DIR, "local_d2_by_line.csv")
+if (file.exists(compare_file)) {
+  prev <- fread(compare_file)[valid_year %in% VALID_YEARS, .(line, valid_year, iter2_d2 = d2)]
+  compare <- merge(line_score[, .(line, valid_year, wendy3_d2 = d2)], prev, by = c("line", "valid_year"), all.x = TRUE)
+  compare[, change := wendy3_d2 - iter2_d2]
+  compare <- compare[order(match(line, c(LINES, "ALL")), valid_year)]
+}
+save_csv(res, STEP, "validation_metrics.csv")
+save_csv(peril_res, STEP, "validation_metrics_by_peril.csv")
+save_csv(line_score, STEP, "local_d2_by_line.csv")
+save_csv(rbindlist(lift), STEP, "lift_deciles.csv")
+
+p <- ggplot(melt(rbindlist(lift), id.vars = c("line", "decile")), aes(decile, value, colour = variable)) +
+  geom_line() + geom_point() + facet_wrap(~line, scales = "free_y") + scale_x_continuous(breaks = 1:10) +
+  labs(title = "Lift on 2024 validation: mean actual vs predicted row cost by predicted decile (sum of peril models)",
+       subtitle = "Actual 2024 is as reported (immature), so actual sits below predicted", y = "CU per row", colour = NULL)
+save_plot(p, STEP, "plots/lift.png", width = 12, height = 5)
+
+# 2. Final fit of every peril on 2021-24, score 2025 -> submission -----------------------------------------
+unlink(ITER_DIR, recursive = TRUE)
+FITTED_DIR <- file.path(ITER_DIR, "fitted")
+dir.create(FITTED_DIR, recursive = TRUE)
+sub_parts <- list(); test_summary <- list(); peril_summary <- list(); imp_final <- list(); features_used <- list()
+for (ln in LINES) {
+  tr <- read_clean(paste0("train_", ln))
+  te <- read_clean(paste0("test_", ln))
+  comps <- list(); pred <- numeric(nrow(te))
+  for (pr in PERILS[[ln]]) {
+    ctx <- prepare_targets(tr, ln, pr)
+    set.seed(fit_seed(ln, pr, 2025))
+    fit <- fit_xgb_tweedie(tr, te, ctx)
+    comps[[pr]] <- fit$artifact
+    pred <- pred + fit$pred
+    yc <- peril_col(pr)
+    peril_summary[[paste(ln, pr)]] <- data.table(line = ln, peril = pr, cap = ctx$cap, cap_loading = ctx$loading,
+                                                 balance = fit$balance, rounds = fit$best_iter, predicted_total = sum(fit$pred),
+                                                 predicted_burn_cost = sum(fit$pred) / sum(te$exposure),
+                                                 train_burn_2021_23 = tr[policy_year < 2024, sum(get(yc)) / sum(exposure)],
+                                                 params = paste(names(fit$artifact$params), unlist(fit$artifact$params),
+                                                                sep = "=", collapse = ", "))
+    imp_final[[paste(ln, pr)]] <- fit$importance[, `:=`(line = ln, peril = pr, rank = .I)]
+    log_msg(ln, " / ", pr, " refitted on 2021-24 (", fit$best_iter, " rounds)")
+  }
+  save_model(list(model = "peril_sum", line = ln, perils = PERILS[[ln]], components = comps),
+             FITTED_DIR, paste(ln, LINE_MODEL, sep = "_"))
+  pred <- pmax(pred, 0)
+  q <- quantile(pred, c(0.5, 0.9, 0.99), names = FALSE)
+  test_summary[[ln]] <- data.table(line = ln, model = LINE_MODEL, perils = length(PERILS[[ln]]),
+                                   test_rows = nrow(te), test_exposure = sum(te$exposure), predicted_total = sum(pred),
+                                   predicted_burn_cost = sum(pred) / sum(te$exposure),
+                                   train_burn_2021_23 = tr[policy_year < 2024, sum(y_cost) / sum(exposure)],
+                                   p50_row = q[1], p90_row = q[2], p99_row = q[3], max_row = max(pred))
+  features_used[[ln]] <- data.table(line = ln, n_features = length(comps[[1]]$features),
+                                    features = paste(comps[[1]]$features, collapse = ", "))
+  sub_parts[[ln]] <- data.table(row_id = te$row_id, prediction = pred)
+  log_msg(ln, " scored on test (sum of ", length(PERILS[[ln]]), " peril models)")
+  rm(tr, te, pred, comps); gc(verbose = FALSE)
+}
+test_summary <- rbindlist(test_summary)
+peril_summary <- rbindlist(peril_summary)
+peril_summary[, share_of_line := predicted_total / sum(predicted_total), by = line]
+imp_final <- rbindlist(imp_final)
+features_used <- rbindlist(features_used)
+sub <- rbindlist(sub_parts)
+sample_sub <- read_raw("sample_submission")
+stopifnot(nrow(sub) == nrow(sample_sub), setequal(sub$row_id, sample_sub$row_id),
+          !anyDuplicated(sub$row_id), !anyNA(sub$prediction), all(sub$prediction >= 0))
+sub <- sub[match(sample_sub$row_id, row_id)]
+sub_file <- out_file("submission", "submission_provisional.csv")
+fwrite(sub, sub_file, scipen = 50)
+run_file <- out_file("submission", paste0("submission_", RUN_ID, ".csv"))
+file.copy(sub_file, run_file, overwrite = TRUE)
+sub_md5 <- unname(tools::md5sum(run_file))
+
+# Replication check: reload the saved line models (with their peril models) from disk, re-score, compare
+replication <- rbindlist(lapply(LINES, function(ln) {
+  te <- read_clean(paste0("test_", ln))
+  re <- pmax(score_model(load_model(FITTED_DIR, paste(ln, LINE_MODEL, sep = "_")), te), 0)
+  data.table(line = ln, model = LINE_MODEL, rows = nrow(te), max_abs_diff = max(abs(re - sub[match(te$row_id, row_id), prediction])))
+}))
+replication_ok <- all(replication$max_abs_diff < 1e-6)
+if (!replication_ok) warning("Reloaded models do not reproduce the submission - see the model card.")
+log_msg("Replication check ", if (replication_ok) "passed" else "FAILED", " (max abs diff ",
+        signif(max(replication$max_abs_diff), 3), ")")
+
+# Run history: local Kaggle score of this run, for cross-checking the submission log
+d2_of <- function(ln, vy) {
+  d <- line_score[line == ln & valid_year == vy, d2]
+  if (length(d) == 0) NA_real_ else d
+}
+git_commit <- tryCatch({
+  h <- system2("git", c("rev-parse", "--short", "HEAD"), stdout = TRUE, stderr = FALSE)
+  dirty <- length(system2("git", c("status", "--porcelain", "--untracked-files=no", "--", "week1/R"),
+                          stdout = TRUE, stderr = FALSE)) > 0
+  paste0(h, if (dirty) " + uncommitted changes in week1/R/" else "")
+}, error = function(e) "unknown")
+run_row <- data.table(iteration = ITERATION, run_id = RUN_ID, git_commit = git_commit, file = basename(run_file),
+                      file_md5 = sub_md5, replication_check = if (replication_ok) "passed" else "FAILED",
+                      models = paste(paste0(LINES, "=", LINE_MODEL, " (", lengths(PERILS[LINES]), " perils)"), collapse = "; "),
+                      local_d2_2023 = d2_of("ALL", 2023), local_d2_2024 = d2_of("ALL", 2024),
+                      by_line_2023_2024 = paste(sprintf("%s %s / %.3f", LINES,
+                                                        ifelse(is.na(sapply(LINES, d2_of, vy = 2023)), "n/a",
+                                                               sprintf("%.3f", sapply(LINES, d2_of, vy = 2023))),
+                                                        sapply(LINES, d2_of, vy = 2024)), collapse = "; "))
+for (ln in LINES) for (vy in VALID_YEARS) set(run_row, j = paste0("d2_", ln, "_", vy), value = d2_of(ln, vy))
+hist_file <- out_file(STEP, "run_history.csv")
+history <- if (file.exists(hist_file)) {
+  rbind(fread(hist_file, colClasses = list(character = c("iteration", "run_id"))), run_row, fill = TRUE)
+} else run_row
+fwrite(history, hist_file)
+
+# 3. Model card (tracked in git under week1/models/, rendered on the site) ----------------------------------------
+fwrite(run_row, file.path(ITER_DIR, "summary.csv"))
+fwrite(res, file.path(ITER_DIR, "validation_metrics.csv"))
+fwrite(peril_res, file.path(ITER_DIR, "validation_metrics_by_peril.csv"))
+fwrite(line_score, file.path(ITER_DIR, "local_d2_by_line.csv"))
+fwrite(test_summary, file.path(ITER_DIR, "test_prediction_summary.csv"))
+fwrite(peril_summary, file.path(ITER_DIR, "test_prediction_by_peril.csv"))
+fwrite(features_used, file.path(ITER_DIR, "features_used.csv"))
+fwrite(imp_final, file.path(ITER_DIR, "xgb_importance.csv"))
+fwrite(xgb_tuning, file.path(ITER_DIR, "xgb_tuning.csv"))
+fwrite(ibnr_peril, file.path(ITER_DIR, "ibnr_factors_by_peril.csv"))
+if (!is.null(compare)) fwrite(compare, file.path(ITER_DIR, "compare_iteration_02.csv"))
+
+for (ln in LINES) {
+  p <- ggplot(imp_final[line == ln & rank <= 10], aes(reorder(paste(Feature, peril, sep = "___"), Gain), Gain)) +
+    geom_col(fill = "steelblue") + coord_flip() + facet_wrap(~peril, scales = "free") +
+    scale_x_discrete(labels = function(x) sub("___.*$", "", x)) +
+    labs(title = paste0("XGBoost gain importance by peril - ", ln, " (final fit, top 10)"), x = NULL,
+         y = "share of total gain")
+  ggsave(file.path(ITER_DIR, paste0("xgb_importance_", ln, ".png")), p, width = 13, height = 7, dpi = 110, bg = "white")
+}
+p <- ggplot(xgb_tuning, aes(config, holdout_d2)) + geom_point(colour = "grey50") +
+  geom_point(data = xgb_tuning[rank == 1], colour = "red", size = 3) + facet_wrap(~ paste(line, peril), scales = "free") +
+  labs(title = "Grid search per peril: holdout D2 per configuration tried", subtitle = "red = selected",
+       x = "configuration (order tried)", y = "holdout D2 (2021-22, 20% policies)")
+ggsave(file.path(ITER_DIR, "xgb_tuning.png"), p, width = 14, height = 9, dpi = 110, bg = "white")
+p <- ggplot(peril_res, aes(reorder(paste(line, peril), d2), d2, fill = factor(valid_year))) +
+  geom_col(position = "dodge") + coord_flip() +
+  labs(title = "Local Tweedie D2 per peril model (own baseline)", x = NULL, y = "D2", fill = "valid year")
+ggsave(file.path(ITER_DIR, "d2_by_peril.png"), p, width = 10, height = 7, dpi = 110, bg = "white")
+
+settings <- data.table(
+  setting = c("Model", "Perils", "Training years (final fit)", "Validation folds", "Large-loss cap", "IBNR",
+              "Grid search", "Excluded from features", "Seed"),
+  value = c(paste("Per peril: XGBoost reg:tweedie on peril cost per exposure-year, weight = exposure, hist trees,",
+                  "early stopping on a 10% policy holdout, then a balance factor so predictions on the training rows",
+                  "add up to the training target. Line cost = sum of its peril predictions"),
+            paste(sapply(LINES, function(ln) paste0(ln, ": ", paste(PERILS[[ln]], collapse = ", "))), collapse = "; "),
+            paste(range(TRAIN_YEARS), collapse = "-"),
+            paste(sprintf("fit %d-%d, score %d", min(TRAIN_YEARS), VALID_YEARS - 1, VALID_YEARS), collapse = "; "),
+            paste0("peril row cost capped at p", 100 * LARGE_LOSS_QUANTILE, " of that peril's positive row costs, ",
+                   "cap loading per peril on predictions"),
+            "peril targets x the peril's IBNR count factor for their policy year (report lags of 2021-22 losses of that peril)",
+            sprintf("%d-second budget split by line (%s) then equally over perils; random order over %s configurations, tuned on %s (20%% policy holdout)",
+                    XGB_TUNE_SECONDS, paste(names(XGB_TUNE_SHARE), XGB_TUNE_SHARE, sep = " ", collapse = ", "),
+                    format(nrow(XGB_GRID), big.mark = ","), paste(range(XGB_TUNE_YEARS), collapse = "-")),
+            paste(NON_FEATURES, collapse = ", "),
+            paste0(SEED, " + per-fit offset by line, peril and year (fit_seed())")))
+
+card <- c(
+  paste0("# ", ITERATION, " - per-peril models"), "",
+  paste0("**Run id** `", RUN_ID, "` | **Generated** ", format(Sys.time(), "%Y-%m-%d %H:%M"),
+         " | **Git commit** `", git_commit, "` | **Submission file** `", basename(run_file), "`"), "",
+  paste0("**Change in this iteration:** ", ITERATION_NOTE), "",
+  if (grepl("uncommitted", git_commit))
+    c("> **Warning:** generated from uncommitted code, so the git commit above does not fully describe this run.", ""),
+  paste0("Public Kaggle scores for this iteration are in the submission log (`Iteration` column `", ITERATION,
+         "`) and on the Model iterations overview page."), "",
+  "## Reproducibility",
+  paste0("Submission file MD5 `", sub_md5, "`. The final models are saved in `", FITTED_DIR,
+         "/`: one `<line>_xgb_peril_sum.rds` per line, which lists its peril models `<line>_<peril>_xgb_tweedie.rds` + `.ubj`.",
+         " Each fit uses its own seed (`fit_seed()`)."), "",
+  "Reload and score without refitting (loads the line model and all its peril models):", "",
+  "```r", "source(\"week1/R/0_setup.R\"); source(\"week1/R/model_io.R\"); library(xgboost)",
+  paste0("art  <- load_model(\"", FITTED_DIR, "\", \"motor_", LINE_MODEL, "\")"),
+  "pred <- pmax(score_model(art, read_clean(\"test_motor\")), 0)",
+  "bi   <- score_model(art$components$bodily_injury, read_clean(\"test_motor\"))   # one peril on its own", "```", "",
+  paste0("Replication check (saved models reloaded and re-scored vs the submission): **",
+         if (replication_ok) "passed" else "FAILED", "**"), "",
+  md_table(replication, 10),
+  "## Settings", md_table(settings),
+  "## Accuracy - local Kaggle score (Tweedie D2, p = 1.5, higher = better)",
+  "Line = sum of its peril models, scored against the line's own baseline; ALL = one baseline over all rows (as Kaggle).",
+  "`deviance_share` = the line's share of the remaining combined error (where improvement moves the score most).", "",
+  md_table(line_score_wide, 4),
+  if (!is.null(compare)) c("### Versus iteration 2 (one XGBoost model per line, same 2024 fold: fit 2021-23)", "",
+                           md_table(compare, 4)),
+  md_table(res[order(line, valid_year), .(line, valid_year, d2, gini, pred_vs_reported, pred_vs_developed, total_rounds)], 4),
+  "### By peril",
+  "Each peril model against its own constant-rate baseline. `cost_share` = the peril's share of the line's reported",
+  "cost in that year; `pred_vs_developed` compares predictions with reported cost x the peril IBNR factor.", "",
+  "![](d2_by_peril.png)", "",
+  md_table(peril_score_wide, 4),
+  "## Peril IBNR count factors",
+  "Same method as step 5 (expected share of claims reported by 31 Dec 2024 from 2021-22 lags), per peril.", "",
+  md_table(dcast(ibnr_peril, line + peril + median_lag_days ~ policy_year, value.var = "ibnr_factor")[order(match(line, LINES))], 4),
+  "## 2025 test predictions (final fit on 2021-24)", md_table(test_summary, 2),
+  "### By peril", md_table(peril_summary[, !"params"], 3),
+  "## Grid search",
+  paste("Each configuration is trained on 80% of 2021-23 policies and scored on the other 20% with the Kaggle metric",
+        "(peril cost only); the best per peril is used for every later fit of that peril (with its own early stopping)."), "",
+  "![](xgb_tuning.png)", "",
+  md_table(peril_summary[, .(line, peril, rounds_final_fit = rounds, params)]),
+  md_table(xgb_tuning[rank <= 3][order(match(line, LINES), peril, rank)], 4),
+  "## Features used (same for every peril of a line)", md_table(features_used),
+  "## Variable importance (final fit, share of total gain)",
+  unlist(lapply(LINES, function(ln) c(paste0("![](xgb_importance_", ln, ".png)"), ""))),
+  md_table(imp_final[rank <= 10, .(line, peril, rank, Feature, Gain, Cover, Frequency)], 4)
+)
+writeLines(card, file.path(ITER_DIR, "model_card.md"))
+log_msg("Model card: ", file.path(ITER_DIR, "model_card.md"))
+
+# 4. Report (latest run) -------------------------------------------------------------------------------
+write_md(list(
+  "# Step 6 - Model iterations (latest run)", "",
+  paste("Generated", format(Sys.time(), "%Y-%m-%d %H:%M"), "from `week1/R/4_models_iterwendy03.R`,", ITERATION,
+        "run id", paste0("`", RUN_ID, "`."), "The full model card is in", paste0("`", ITER_DIR, "/model_card.md`.")), "",
+  "One XGBoost Tweedie model per peril; each line's prediction is the sum of its peril models.",
+  "Validation on time: one fold, fit on 2021-23 and score 2024 (*as reported*, so immature).",
+  "Local score = **Tweedie D2**, the Kaggle metric (higher = better).", "",
+  "## Local Kaggle score by line and combined", md_table(line_score_wide, 4),
+  if (!is.null(compare)) c("### Versus iteration 2", md_table(compare, 4)),
+  "## Local Kaggle score by peril", md_table(peril_score_wide[, .(line, peril, d2_2024, cost_share_2024)], 4),
+  "Row for the submission log in `week1/docs/workflow.md` (fill in date, time and public score after uploading):", "",
+  md_table(run_row[, .(iteration, run_id, file, models, local_d2_2023, local_d2_2024, by_line_2023_2024)], 4),
+  "## Lift", "![](plots/lift.png)", "",
+  "## Submission", paste0("Written to `", sub_file, "` and archived as `", run_file, "`."), "",
+  md_table(test_summary, 2),
+  "## Known limitations / next steps",
+  "- Sparse perils (fire, subsidence, flood) have about 1-2 thousand claim rows; their trees stop early and lean on few splits.",
+  "- Peril caps at p99.9 of a sparse peril sit near its largest claims; the cap loading spreads the rest over all rows.",
+  "- `written_premium` is a feature (current pricing signal); review for the guardrails write-up.",
+  "- IBNR covers late reporting only; open-claim case development is not modelled."
+), STEP, "model_report.md")
+
+log_msg("Done. Report: ", out_file(STEP, "model_report.md"), " | Submission: ", sub_file)

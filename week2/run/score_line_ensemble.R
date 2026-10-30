@@ -1,0 +1,10 @@
+source("week2/R/0_setup_w2.R")
+source("week2/R/score_w2.R")
+read_v <- function(tag) as.data.table(arrow::read_parquet(file.path("data/week_2/optionB/adjust", tag, "valid_2024_peril.parquet")))
+a <- read_v("x20_tblend")
+b <- read_v("rt_var_b8_chosen")
+p <- rbind(a[line == "motor"], b[line != "motor"])
+p <- p[, .(row_id, line, peril, exposure, freq = exposure * freq_B, sev = sev_B)]
+sc <- score_model_w2(p, "OPTB_LINE_ENSEMBLE", "x20 motor + re-tuned buildings and contents", "week2/run/score_line_ensemble.R")
+record_scores_w2(sc)
+cat(scorecard_md_w2(sc), sep = "\n")

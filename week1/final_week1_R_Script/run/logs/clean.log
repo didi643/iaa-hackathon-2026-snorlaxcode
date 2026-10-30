@@ -1,0 +1,16 @@
+The tzdb package is not installed. Timezones will not be available to Arrow compute functions. If you get errors when using Arrow on datetimes, try running `install.packages('tzdb')` and trying again.
+10:49:41 | Cleaning motor
+10:50:04 | motor: train 979968 rows, test 254986 rows written
+10:50:05 | Cleaning buildings
+10:50:17 | buildings: train 707726 rows, test 184155 rows written
+10:50:18 | Cleaning contents
+10:50:30 | contents: train 721617 rows, test 187498 rows written
+10:50:31 | Cleaning done. Report: output/2_clean/cleaning_report.md
+10:50:37 | before_after: 2 columns
+10:50:39 | clean_motor: 78 columns
+10:51:09 | before_after: 3 columns
+10:51:11 | clean_buildings: 66 columns
+10:51:34 | before_after: 2 columns
+10:51:35 | clean_contents: 67 columns
+There were 50 or more warnings (use warnings() to see the first 50)
+10:51:56 | Done. Reports: output/2_clean/cleaning_report.md, output/2_1_clean_eda/clean_eda_report.md

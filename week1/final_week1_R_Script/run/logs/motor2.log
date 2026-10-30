@@ -1,0 +1,19 @@
+The tzdb package is not installed. Timezones will not be available to Arrow compute functions. If you get errors when using Arrow on datetimes, try running `install.packages('tzdb')` and trying again.
+14:57:42 | Phase A: data
+Warning message:
+In max.default(numeric(0), na.rm = FALSE) :
+  no non-missing arguments to max; returning -Inf
+            used   (Mb) gc trigger   (Mb)  max used   (Mb)
+Ncells   4871310  260.2    9011625  481.3   5212784  278.4
+Vcells 134917249 1029.4  349026142 2662.9 348955665 2662.4
+14:57:59 | Phase B: folds and candidate fits
+15:00:18 | Fold 2022 fitted in 2.3 min
+15:05:14 | Fold 2023 fitted in 4.9 min
+15:11:37 | Fold 2024 fitted in 6.4 min
+15:11:37 | Phase E: decisions
+15:13:28 | Phase F: final fit on 2021-24
+            used   (Mb) gc trigger   (Mb)  max used   (Mb)
+Ncells   4932952  263.5    9011625  481.3   9011625  481.3
+Vcells 177380800 1353.4  534127702 4075.1 834573742 6367.3
+15:17:27 | Replication max abs diff 0
+15:17:28 | Done in 19.8 min; card at models/motor_iteration_02/model_card.md

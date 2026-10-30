@@ -1,0 +1,4 @@
+The tzdb package is not installed. Timezones will not be available to Arrow compute functions. If you get errors when using Arrow on datetimes, try running `install.packages('tzdb')` and trying again.
+11:53:06 | motor: history for 1234954 rows, mean N 0.1918, mean E 0.1899 (0.5 min)
+11:53:20 | buildings: history for 891881 rows, mean N 0.0593, mean E 0.0593 (0.2 min)
+11:53:36 | contents: history for 909115 rows, mean N 0.0539, mean E 0.054 (0.3 min)
