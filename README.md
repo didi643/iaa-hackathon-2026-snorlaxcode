@@ -132,6 +132,7 @@ report/                       write-up (markdown and PDF) and video script
 dummy_guide/                  technical guide to both final models (md + source-map workbook), with all citations;
                               sources/ holds copies of the generated outputs it cites
 verify_final_files.R          level A and B checks (see above)
+kaggle/                       Kaggle R notebook that rebuilds both final files from the saved model outputs (see its README)
 
 week1/
   final_week1_R_Script/       FULL REBUILD of the Week 1 final file (run_all.R, README, MODEL_METHODOLOGY)

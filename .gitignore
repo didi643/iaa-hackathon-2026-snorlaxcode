@@ -33,3 +33,6 @@ notes/
 .Rhistory
 .RData
 .Rproj.user/
+
+# Kaggle dataset staging (copies of files already in the repo)
+kaggle/dataset/
